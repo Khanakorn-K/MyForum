@@ -181,6 +181,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       data: post,
+      message: "Post created successfully",
+      id: post.id,
     });
   } catch (error) {
     console.error("Error creating post:", error);
