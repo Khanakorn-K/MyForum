@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { useDemo } from '../hooks/useDemo';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/Card';
+import { Card, CardContent, CardHeader, CardTitle } from '../../../components/ui/Card';
 
 export const DemoComponent = () => {
   const { data, loading } = useDemo();

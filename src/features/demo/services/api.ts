@@ -1,7 +1,8 @@
-import { apiClient } from '@/lib/api-client';
-import { ApiResponse } from '@/types/api';
+
 import { DemoDataResponseModel } from '../models/DemoDataResponseModel';
 import { DemoDataEntity } from '../entity/DemoData';
+import { apiClient } from '../../../lib/api-client';
+import { ApiResponse } from '../../../types/api';
 
 export const demoService = {
   fetchDataAll: async (): Promise<DemoDataEntity[]> => {

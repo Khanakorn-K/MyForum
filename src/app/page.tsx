@@ -1,6 +1,16 @@
-import { DemoComponent } from "@/features/demo/components/DemoComponent";
+"use client"
+import { useSession } from "next-auth/react";
+import { useEffect } from "react";
+import { DemoComponent } from "../features/demo/components/DemoComponent";
 
 export default function Home() {
+  const { data: session } = useSession();
+
+  useEffect(() => {
+    if (session) {
+      console.log("session>>>", session.user.id);
+    }
+  }, []);
   return (
     <div className="space-y-8">
       <section className="text-center space-y-4">
