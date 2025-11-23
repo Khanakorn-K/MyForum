@@ -4,7 +4,7 @@ import { PostResponseModel } from '../models/PostResponseModel';
 import { CreatePostRequestModel } from '../models/CreatePostRequestModel';
 import { PostEntity } from '../entity/PostEntity';
 
-export const postService = {
+export const postDataSource = {
     createPost: async (data: CreatePostRequestModel): Promise<PostEntity> => {
         const response = await apiClient.post<ApiResponse<PostResponseModel>>('/post', data);
         return new PostEntity(response.data);

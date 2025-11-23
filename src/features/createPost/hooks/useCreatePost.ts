@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { postService } from "../services/postDataSource";
+import { postDataSource } from "../services/postDataSource";
 import { CreatePostRequestModel } from "../models/CreatePostRequestModel";
 import { PostEntity } from "../entity/PostEntity";
 import { useRouter } from "next/navigation";
@@ -89,14 +89,14 @@ export const useCreatePost = () => {
         prev.categories?.filter((_, index) => index !== indexToRemove) || [],
     }));
   };
-  
+
   //call api layer
   const fetchcreatePost = async (data: CreatePostRequestModel) => {
     setIsLoading(true);
     setError(null);
 
     try {
-      const newPost = await postService.createPost(data);
+      const newPost = await postDataSource.createPost(data);
       setPost(newPost);
       return newPost;
     } catch (err) {

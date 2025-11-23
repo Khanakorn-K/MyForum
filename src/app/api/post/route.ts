@@ -13,10 +13,16 @@ function generateSlug(title: string): string {
     .trim();
 }
 
-// GET /api/post - Get all posts
-export async function GET() {
+// GET /api/post - Get
+export async function GET(request: NextRequest) {
+  const { searchParams } = new URL(request.url);
+  const skip = Number(searchParams.get("skip") ?? 1);
+  const take = Number(searchParams.get("take") ?? 10);
+  console.log("from api post body = ", skip, take);
   try {
     const posts = await prisma.post.findMany({
+      skip: skip,
+      take: take,
       orderBy: { createdAt: "desc" },
       include: {
         author: {
@@ -85,7 +91,8 @@ export async function POST(request: NextRequest) {
 
     // TODO: Get authorId from session
     // For now, we'll need to get the first user or create a default user
-    const author = session?.user;
+    // สำหรับทดสอบอย่าลืมกลับมาแก้
+    const author = session?.user ?? (await prisma.user.findFirst());
 
     if (!author) {
       return NextResponse.json(

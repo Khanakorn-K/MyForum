@@ -37,8 +37,8 @@ async function fetchWrapper<T>(
 }
 
 export const apiClient = {
-  get: <T>(endpoint: string, config?: RequestConfig) =>
-    fetchWrapper<T>(endpoint, { ...config, method: "GET" }),
+  get: <T>(endpoint: string, skip?:number, take?:number, config?: RequestConfig) =>
+    fetchWrapper<T>(`${endpoint}?skip=${skip}&take=${take}`, { ...config, method: "GET", }),
 
   post: <T>(endpoint: string, body: unknown, config?: RequestConfig) =>
     fetchWrapper<T>(endpoint, {
