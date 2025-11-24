@@ -1,11 +1,7 @@
 import PostList from "./components/PostList";
 
 const LandingPageIndex = () => {
-  return (
-    <div>
-      <PostList />
-    </div>
-  );
+  return <PostList />;
 };
 
 export default LandingPageIndex;

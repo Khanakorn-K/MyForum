@@ -1,17 +1,20 @@
-import { Timestamp } from "next/dist/server/lib/cache-handlers/types";
 
 export interface PostListResponseModel {
-  id: string;
-  authorId: string;
-  content: string;
+  id: string | null;
+  authorId: string | null;
+  content: string | null;
   coverImage: string | null;
-  createdAt: Timestamp;
-  excerpt: string;
-  published: boolean;
-  publishedAt: Timestamp;
+  createdAt: string | null;
+  excerpt: string | null;
+  published: boolean | false;
+  publishedAt: string | null;
   slug: string[] | [null];
-  title: string;
-  updateAt: string;
-  message: string;
-  timestamp: number;
+  title: string | null;
+  updateAt: string | null;
+  message: string | null;
+  timestamp: number | null;
+  author?: {
+    name: string | null;
+    image: string | null;
+  } | null;
 }

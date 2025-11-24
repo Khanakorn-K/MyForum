@@ -9,7 +9,7 @@ import { Button } from "../ui/Button";
 
 export const Navbar = () => {
   const session = useSession();
-
+  console.log(session);
   return (
     <nav className="border-b bg-white dark:bg-gray-900 dark:border-gray-800">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -17,14 +17,18 @@ export const Navbar = () => {
           href="/"
           className="text-xl font-bold text-gray-900 dark:text-white"
         >
-          <Image
-            // src="/NavBar/LogoMain.png"
-            src={session.data?.user?.image ?? "/d/NavBar/LogoMain.png"}
-            alt="LogoMain"
-            className="rounded-full"
-            width={52}
-            height={52}
-          />
+          <div className="flex items-center gap-2">
+            <Image
+              // src="/NavBar/LogoMain.png"
+              src={session.data?.user?.image ?? "/d/NavBar/LogoMain.png"}
+              alt="LogoMain"
+              className="rounded-full"
+              width={52}
+              height={52}
+            />
+            <h2>{session.data?.user.name}</h2>
+            <h2>{session.data?.user.role}</h2>
+          </div>
         </Link>
         {/* <SearchBar /> */}
         <div className="flex items-center gap-2">

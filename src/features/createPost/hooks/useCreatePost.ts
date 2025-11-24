@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { postDataSource } from "../services/postDataSource";
+import { useState, useEffect } from "react";
+import { createPostDataSource } from "../services/createPostDataSource";
 import { CreatePostRequestModel } from "../models/CreatePostRequestModel";
 import { PostEntity } from "../entity/PostEntity";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { uploadFile } from "@/utils/supabase";
 
 export const useCreatePost = () => {
@@ -11,6 +11,8 @@ export const useCreatePost = () => {
   const [post, setPost] = useState<PostEntity | null>(null);
 
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const postId = searchParams.get("postId");
 
   const [formData, setFormData] = useState<CreatePostRequestModel>({
     title: "",
@@ -22,14 +24,42 @@ export const useCreatePost = () => {
     tags: [],
   });
 
+  useEffect(() => {
+    const fetchPostData = async () => {
+      if (!postId) return;
+
+      setIsLoading(true);
+      try {
+        const result = await createPostDataSource.getPostById(postId);
+        if (result) {
+          setFormData({
+            title: result.title || "",
+            excerpt: result.excerpt || "",
+            content: result.content || "",
+            coverImage: result.coverImage || undefined,
+            published: result.published || false,
+            categories:
+              result.categories?.map((c: { name: string }) => c.name) || [],
+            tags: result.tags?.map((t: { name: string }) => t.name) || [],
+          });
+        }
+      } catch (err) {
+        console.error("Failed to fetch post for edit:", err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchPostData();
+  }, [postId]);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     try {
-      const newPost = await fetchcreatePost(formData);
-      router.push(`/posts/${newPost.id}`);
+      await savePost(formData);
     } catch (err) {
-      console.error("Failed to create post:", err);
+      console.error("Failed to save post:", err);
     }
   };
 
@@ -91,8 +121,7 @@ export const useCreatePost = () => {
     }));
   };
 
-  //call api layer
-  const fetchcreatePost = async (data: CreatePostRequestModel) => {
+  const savePost = async (data: CreatePostRequestModel) => {
     setIsLoading(true);
     setError(null);
 
@@ -101,18 +130,26 @@ export const useCreatePost = () => {
         const savedImage = await uploadFile(data.coverImage);
         data.coverImage = savedImage;
       }
-      const newPost = await postDataSource.createPost(data);
-      setPost(newPost);
-      return newPost;
+
+      let result;
+
+      if (postId) {
+        result = await createPostDataSource.updatePost(data, postId);
+      } else {
+        result = await createPostDataSource.createPost(data);
+      }
+
+      router.push(`/post?id=${result.id}`);
     } catch (err) {
       const errorMessage =
-        err instanceof Error ? err.message : "Failed to create post";
+        err instanceof Error ? err.message : "Failed to save post";
       setError(errorMessage);
       throw err;
     } finally {
       setIsLoading(false);
     }
   };
+
   return {
     isLoading,
     error,
@@ -126,5 +163,6 @@ export const useCreatePost = () => {
     removeTag,
     removeCategory,
     router,
+    postId,
   };
 };
