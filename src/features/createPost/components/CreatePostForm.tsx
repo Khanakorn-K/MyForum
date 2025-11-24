@@ -99,7 +99,10 @@ export default function CreatePostForm() {
                 id="coverImage"
                 name="coverImage"
                 onChange={(e) =>
-                  setFormData({ ...formData, coverImage: e.target.files?.[0] })
+                  setFormData({
+                    ...formData,
+                    coverImage: e.target.files?.[0],
+                  })
                 }
                 className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
                 placeholder="https://example.com/image.jpg"

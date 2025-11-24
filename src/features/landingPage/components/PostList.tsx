@@ -10,7 +10,7 @@ const PostList = () => {
     <div className="flex flex-col gap-6">
       {postList?.map((post, index) => (
         <CardPost
-          key={post.id ?? index}
+          key={index}
           content={post.content}
           slug={post.slug}
           title={post.title}
@@ -18,10 +18,9 @@ const PostList = () => {
           displayDisplayCreateAt={post.displayDisplayCreateAt}
         />
       ))}
-      
-      {loading ?? <Spinner />}
 
-      <div ref={loadMoreRef} className="h-8" />
+      {loading ?? <Spinner />}
+      {postList.length ?? <div ref={loadMoreRef} className="h-8" />}
     </div>
   );
 };

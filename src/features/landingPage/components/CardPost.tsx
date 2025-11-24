@@ -17,9 +17,9 @@ const CardPost = ({
         <Image
           width={1200}
           height={800}
-          src={coverImage || mockImageData()}
+          src={coverImage ?? mockImageData()}
           alt={title ?? ""}
-          className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+          className="h-full w-full object-contain transition duration-300 group-hover:scale-105"
         />
         {/* แท็กเล็ก ๆ มุมบนซ้าย */}
         <div className="absolute left-3 top-3">
@@ -44,7 +44,7 @@ const CardPost = ({
 
         {/* footer เล็ก ๆ ด้านล่าง */}
         <div className="mt-3 flex items-center justify-between text-xs text-slate-400">
-          <Button variant= "secondary">
+          <Button variant="secondary">
             <h1>อ่านต่อ...</h1>
           </Button>
           <p>{displayDisplayCreateAt}</p>

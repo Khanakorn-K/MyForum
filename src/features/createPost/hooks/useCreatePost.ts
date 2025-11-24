@@ -3,6 +3,7 @@ import { postDataSource } from "../services/postDataSource";
 import { CreatePostRequestModel } from "../models/CreatePostRequestModel";
 import { PostEntity } from "../entity/PostEntity";
 import { useRouter } from "next/navigation";
+import { uploadFile } from "@/utils/supabase";
 
 export const useCreatePost = () => {
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -96,6 +97,10 @@ export const useCreatePost = () => {
     setError(null);
 
     try {
+      if (data.coverImage instanceof File) {
+        const savedImage = await uploadFile(data.coverImage);
+        data.coverImage = savedImage;
+      }
       const newPost = await postDataSource.createPost(data);
       setPost(newPost);
       return newPost;

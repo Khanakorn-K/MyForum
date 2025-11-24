@@ -156,7 +156,7 @@ export async function POST(request: NextRequest) {
         slug,
         excerpt: excerpt || null,
         content,
-        coverImage: "",
+        coverImage: coverImage,
         published: published || false,
         publishedAt: published ? new Date() : null,
         author: {
