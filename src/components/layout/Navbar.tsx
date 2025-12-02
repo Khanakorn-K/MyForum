@@ -11,7 +11,7 @@ export const Navbar = () => {
   const session = useSession();
   console.log(session);
   return (
-    <nav className="border-b bg-white dark:bg-gray-900 dark:border-gray-800">
+    <nav className=" w-full">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link
           href="/"
