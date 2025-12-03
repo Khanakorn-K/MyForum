@@ -90,14 +90,14 @@ model Post {
 
 model Category {
   id    String @id @default(cuid())
-  name  String
+  name  String @unique
   slug  String @unique
   posts Post[]
 }
 
 model Tag {
   id    String @id @default(cuid())
-  name  String
+  name  String @unique
   slug  String @unique
   posts Post[]
 }

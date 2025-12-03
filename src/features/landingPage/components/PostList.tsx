@@ -1,15 +1,24 @@
 "use client";
 import CardPost from "./CardPost";
 import { usePostList } from "../hooks/usePostList";
+import useStoreTag from "@/store/useStoreTag";
 
 const PostList = () => {
-  const { postList, loading, loadMoreRef } = usePostList();
+  const { postList, loading, loadMoreRef, hasMore } = usePostList();
+  const { tag } = useStoreTag();
+
+  if (!loading && postList.length === 0) {
+    if (tag && tag.slug) {
+      return <h1>ไม่มีรายการโพสต์ สำหรับ {tag.name}</h1>;
+    }
+    return <h1>ไม่มีรายการโพสต์</h1>;
+  }
 
   return (
-    <div className="flex flex-col gap-6 items-center">
-      {postList?.map((post, index) => (
+    <div className="flex flex-col gap-6 items-center pb-10">
+      {postList?.map((post) => (
         <CardPost
-          key={index}
+          key={post.id}
           id={post.id}
           content={post.content}
           slug={post.slug}
@@ -23,7 +32,14 @@ const PostList = () => {
         />
       ))}
 
-      {/* <div ref={loadMoreRef} className="h-8" /> */}
+      {hasMore && (
+        <div
+          ref={loadMoreRef}
+          className="h-10 w-full flex justify-center items-center"
+        >
+          {loading && <span>Loading...</span>}
+        </div>
+      )}
     </div>
   );
 };
