@@ -1,13 +1,5 @@
 "use client";
-import {
-  Calendar,
-  Home,
-  Inbox,
-  Search,
-  Settings,
-  Tag,
-  ChevronDown,
-} from "lucide-react";
+import { Home, Tag, ChevronDown, CardSim } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -19,7 +11,6 @@ import {
   SidebarGroup,
   SidebarGroupContent,
   SidebarGroupLabel,
-  SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
@@ -29,10 +20,16 @@ import {
 } from "@/components/ui/sidebar";
 import { useGlobal } from "@/hooks/globalHook";
 import Link from "next/link";
+import useStoreTag from "@/store/useStoreTag";
+import { Button } from "./ui/Button";
+import useStoreCategories from "@/store/useStoreCategories";
 
 export function AppSidebar() {
-  const { tags } = useGlobal();
-
+  const { tags, category } = useGlobal();
+  const setTag = useStoreTag((state) => state.setTag);
+  const clearTag = useStoreTag((state) => state.clearTag);
+  const setCategories = useStoreCategories((state) => state.setCategory);
+  const clearCategory = useStoreCategories((state) => state.clearCategory);
   const items = [
     {
       title: "Home",
@@ -41,17 +38,25 @@ export function AppSidebar() {
     },
     {
       title: "Tags",
-      url: "#",
       icon: Tag,
       items: tags.map((tag) => ({
         title: tag.name,
-        url: `/tag/${tag.slug}`,
+        onClick: () => {
+          setTag(tag);
+          clearCategory();
+        },
       })),
     },
     {
-      title: "Settings",
-      url: "#",
-      icon: Settings,
+      title: "Category",
+      icon: CardSim,
+      items: category.map((cat) => ({
+        title: cat.name,
+        onClick: () => {
+          setCategories(cat);
+          clearTag();
+        },
+      })),
     },
   ];
 
@@ -76,11 +81,17 @@ export function AppSidebar() {
                       <CollapsibleContent>
                         <SidebarMenuSub>
                           {item.items.map((subItem, index) => (
-                            <SidebarMenuSubItem key={`${subItem.url}-${index}`}>
+                            <SidebarMenuSubItem
+                              key={`${subItem.title}-${index}`}
+                            >
                               <SidebarMenuSubButton asChild>
-                                <Link href={subItem.url}>
+                                <Button
+                                  variant="ghost"
+                                  onClick={subItem.onClick}
+                                  className="w-full justify-start"
+                                >
                                   <span>{subItem.title}</span>
-                                </Link>
+                                </Button>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
                           ))}
@@ -89,7 +100,7 @@ export function AppSidebar() {
                     </Collapsible>
                   ) : (
                     <SidebarMenuButton asChild>
-                      <Link href={item.url}>
+                      <Link href={item.url || "#"}>
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>
