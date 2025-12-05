@@ -1,37 +1,43 @@
 import { CategoriesEntity } from "@/entity/CategoriesEntity";
 import { TagsEntity } from "@/entity/TagsEntity";
-import { CategoriesResponseModel } from "@/model/CategoriesResponseModel";
-import { TagsResponseResultModel } from "@/model/TagsResponseModel";
 import { globalDataSource } from "@/services/globalDataSource";
-import useStoreTag from "@/store/useStoreTag";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export const useGlobal = () => {
   const [tags, setTags] = useState<TagsEntity[]>([]);
   const [category, setCategories] = useState<CategoriesEntity[]>([]);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await globalDataSource.fetchAllTags();
-        setTags(response);
-      } catch (error) {
-        console.error(error);
-      }
-    };
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    fetchData();
+  const fetchAllTags = useCallback(async () => {
+    try {
+      const response = await globalDataSource.fetchAllTags();
+      setTags(response);
+    } catch (error) {
+      console.error("Error fetching tags:", error);
+    }
   }, []);
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await globalDataSource.fetchAllCategories();
-        setCategories(response);
-      } catch (error) {
-        console.error(error);
-      }
-    };
 
-    fetchData();
+  const fetchAllCategories = useCallback(async () => {
+    try {
+      const response = await globalDataSource.fetchAllCategories();
+      setCategories(response);
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
   }, []);
-  return { tags, category };
+
+  useEffect(() => {
+    const initData = async () => {
+      setIsLoading(true);
+      await Promise.all([fetchAllTags(), fetchAllCategories()]);
+      setIsLoading(false);
+    };
+    initData();
+  }, [fetchAllTags, fetchAllCategories]);
+
+  return {
+    tags,
+    category,
+    isLoading,
+  };
 };

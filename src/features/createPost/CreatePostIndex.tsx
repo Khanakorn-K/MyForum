@@ -48,7 +48,7 @@ export default function CreatePostIndex() {
   const addTag = (value: string) => {
     const trimmed = value.trim();
     if (!trimmed) return;
-    if (!formData.tags.includes(trimmed)) {
+    if (!formData.tags?.includes(trimmed)) {
       setFormData((prev) => ({
         ...prev,
         tags: [...(prev.tags || []), trimmed],

@@ -84,9 +84,10 @@ export async function POST(request: NextRequest) {
         coverImage,
         published: published || false,
         publishedAt: published ? new Date() : null,
-        author: {
-          connect: { id: author.id },
-        },
+        authorId: author.id,
+        // author: {
+        //   connect: { id: author.id },
+        // },
         categories: {
           connect: categoryIds,
         },

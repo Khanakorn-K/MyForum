@@ -69,7 +69,7 @@ const PostIndex = () => {
               </h1>
               <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
                 <span>{formatDate((post).createdAt)}</span>
-                <span className={`h-1 w-1 rounded-full ${post.published ? "bg-green-600" : "bg-slate-600"}`} />
+                <span className="h-1 w-1 rounded-full bg-slate-600" />
                 <span>
                   เผยแพร่แล้ว: {post.published ? "ใช่" : "ยังไม่เผยแพร่"}
                 </span>
@@ -83,7 +83,7 @@ const PostIndex = () => {
                   height={800}
                   src={post.coverImage}
                   alt={post.title}
-                  className="h-80 w-full object-contain transition duration-500 ease-out hover:scale-105"
+                  className="h-80 w-full object-cover transition duration-500 ease-out hover:scale-105"
                 />
               </div>
             )}
