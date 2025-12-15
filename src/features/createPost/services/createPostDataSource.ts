@@ -1,20 +1,18 @@
 import { apiClient } from "@/lib/api-client";
 import { ApiResponse } from "@/types/api";
-import {
-  PostResponseModel,
-  PostResponseResultModel,
-} from "../models/PostResponseModel";
+import { PostResponseResultModel } from "../models/PostResponseModel";
 import { CreatePostRequestModel } from "../models/CreatePostRequestModel";
 import { PostEntity } from "../entity/PostEntity";
 import { CreatePostResponseModel } from "../models/CreatePostResponseModel";
-import { PostListResponseModel } from "@/features/landingPage/models/PostListResponseModel";
+import { UpdatePostResponseModel } from "../models/UpdatePostResponseModel";
+import { UpdatePostEntity } from "../entity/UpdatePostEnitity";
 
 export const createPostDataSource = {
   createPost: async (
     data: CreatePostRequestModel
   ): Promise<CreatePostResponseModel> => {
     const response = await apiClient.post<ApiResponse<CreatePostResponseModel>>(
-      "/post/create",
+      "/post/createPost",
       data
     );
     if (!response.success) {
@@ -25,9 +23,9 @@ export const createPostDataSource = {
   updatePost: async (
     data: CreatePostRequestModel,
     id: string
-  ): Promise<CreatePostResponseModel> => {
-    const response = await apiClient.put<ApiResponse<CreatePostResponseModel>>(
-      "/post/create",
+  ): Promise<UpdatePostEntity> => {
+    const response = await apiClient.put<UpdatePostResponseModel>(
+      "/post/updatePost",
       data,
       { params: { id: id } }
     );
@@ -35,7 +33,7 @@ export const createPostDataSource = {
     if (!response.success) {
       throw new Error(response.message || "Failed to update post");
     }
-    return response.data;
+    return new UpdatePostEntity(response);
   },
   getPostById: async (id: string): Promise<PostEntity> => {
     const response = await apiClient.get<ApiResponse<PostResponseResultModel>>(

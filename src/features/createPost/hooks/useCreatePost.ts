@@ -131,15 +131,13 @@ export const useCreatePost = () => {
         data.coverImage = savedImage;
       }
 
-      let result;
-
       if (postId) {
-        result = await createPostDataSource.updatePost(data, postId);
+        const result = await createPostDataSource.updatePost(data, postId);
+        router.push(`/post?id=${result.id}`);
       } else {
-        result = await createPostDataSource.createPost(data);
+        const result = await createPostDataSource.createPost(data);
+        router.push(`/post?id=${result.id}`);
       }
-
-      router.push(`/post?id=${result.id}`);
     } catch (err) {
       const errorMessage =
         err instanceof Error ? err.message : "Failed to save post";
