@@ -23,6 +23,7 @@ export async function GET(request: NextRequest) {
 
     return NextResponse.json({ success: true, data: comments });
   } catch (error) {
+    console.error("Error fetching comments:", error);
     return NextResponse.json(
       { success: false, message: "Failed to fetch comments" },
       { status: 500 }
@@ -82,11 +83,10 @@ export async function DELETE(request: NextRequest) {
   try {
     const session = await getServerSession(authOptions);
 
-    // ตรวจสอบสิทธิ์ Admin (Authorization)
-    if (!session || session.user.role !== "ADMIN") {
+    if (!session) {
       return NextResponse.json(
         { success: false, message: "Unauthorized" },
-        { status: 403 }
+        { status: 401 }
       );
     }
 
@@ -100,15 +100,40 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
+    const comment = await prisma.comment.findUnique({
+      where: { id },
+    });
+
+    if (!comment) {
+      return NextResponse.json(
+        { success: false, message: "Comment not found" },
+        { status: 404 }
+      );
+    }
+
+    const isAdmin = session.user.role === "ADMIN";
+    const isOwner = session.user.email === comment.email;
+
+    if (!isAdmin && !isOwner) {
+      return NextResponse.json(
+        {
+          success: false,
+          message: "Forbidden: You can only delete your own comments",
+        },
+        { status: 403 }
+      );
+    }
+
     await prisma.comment.delete({
       where: { id },
     });
 
     return NextResponse.json({
       success: true,
-      message: "Comment deleted",
+      message: "Comment deleted successfully",
     });
   } catch (error) {
+    console.error("Error deleting comment:", error);
     return NextResponse.json(
       { success: false, message: "Failed to delete comment" },
       { status: 500 }
