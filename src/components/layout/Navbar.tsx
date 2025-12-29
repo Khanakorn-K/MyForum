@@ -5,11 +5,11 @@ import { ModeToggle } from "./ModeToggle";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "../ui/Button";
+import SearchBar from "@/features/landingPage/components/SearchBar";
 // import SearchBar from "../searchBar";
 
 export const Navbar = () => {
   const session = useSession();
-  console.log(session);
   return (
     <nav className=" w-full">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -31,6 +31,8 @@ export const Navbar = () => {
           </div>
         </Link>
         {/* <SearchBar /> */}
+        <SearchBar />
+
         <div className="flex items-center gap-2">
           <div className="flex gap-2 items-center">
             <Link
