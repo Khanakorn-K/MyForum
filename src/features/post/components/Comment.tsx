@@ -17,7 +17,6 @@ const Comment = ({ postId }: { postId: string }) => {
     session,
   } = useComment({ postId });
 
-  // ถ้ายังไม่ login อาจจะซ่อนฟอร์ม หรือแสดงปุ่ม Login (ขึ้นอยู่กับดีไซน์)
   if (!session) {
     return (
       <div className="w-full max-w-2xl mx-auto mt-10 p-6 bg-card rounded-xl border border-border shadow-sm text-center">
