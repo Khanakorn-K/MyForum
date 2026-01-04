@@ -1,5 +1,7 @@
+// services/createPostDataSource.ts
+
 import { apiClient } from "@/lib/api-client";
-import { ApiResponse } from "@/types/api";
+import { ApiResponse } from "@/types/api"; // อย่าลืม import ApiResponse
 import { PostResponseResultModel } from "../models/PostResponseModel";
 import { CreatePostRequestModel } from "../models/CreatePostRequestModel";
 import { PostEntity } from "../entity/PostEntity";
@@ -35,17 +37,20 @@ export const createPostDataSource = {
     }
     return new UpdatePostEntity(response);
   },
+
   getPostById: async (id: string): Promise<PostEntity> => {
     const response = await apiClient.get<ApiResponse<PostResponseResultModel>>(
       "/post",
       { params: { id: id } }
     );
 
-    if (!response.success) {
-      throw new Error(response.message || "Failed to get post");
+
+    if (!response || !response.success || !response.data) {
+      throw new Error("Failed to get post");
     }
     return new PostEntity(response.data);
   },
+
   deletePost: (id: string) => {
     return apiClient.delete<ApiResponse<void>>(`/post/${id}`);
   },

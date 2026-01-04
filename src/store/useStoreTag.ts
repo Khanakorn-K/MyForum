@@ -1,7 +1,7 @@
 import { TagsEntity } from "@/entity/TagsEntity";
 import { create } from '@/store/restAllStore';
 type State = {
-  tag: TagsEntity;
+  selectTag: TagsEntity;
 };
 type Action = {
   clearTag: () => void;
@@ -9,9 +9,9 @@ type Action = {
 };
 
 const useStoreTag = create<State & Action>((set) => ({
-  tag: { id: "", name: "", slug: "" } as TagsEntity,
-  clearTag: () => set({ tag: { id: "", name: "", slug: "" } as TagsEntity }),
-  setTag: (value) => set({ tag: value }),
+  selectTag: { id: "", name: "", slug: "" } as TagsEntity,
+  clearTag: () => set({ selectTag: { id: "", name: "", slug: "" } as TagsEntity }),
+  setTag: (value) => set({ selectTag: value }),
 }));
 
 export default useStoreTag;

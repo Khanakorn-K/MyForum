@@ -23,7 +23,6 @@ export const authOptions: NextAuthOptions = {
         token.role = user.role;
       }
 
-      console.log(user);
       return token;
     },
     async session({ session, token }) {
@@ -31,19 +30,15 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.id as string;
         session.user.role = token.role as string;
       }
-      console.log(session);
       return session;
     },
   },
   events: {
     createUser: async (message) => {
-      console.log("CreateUser Event:", message);
     },
     linkAccount: async (message) => {
-      console.log("LinkAccount Event:", message);
     },
     signIn: async (message) => {
-      console.log("SignIn Event:", message);
     },
   },
   pages: {

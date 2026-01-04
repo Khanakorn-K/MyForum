@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 
+// GET method เหมือนเดิม... (ละไว้)
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
   const id = searchParams.get("id");
+  const search = searchParams.get("search");
 
   try {
     if (id) {
@@ -24,9 +26,18 @@ export async function GET(request: NextRequest) {
     const posts = await prisma.post.findMany({
       skip,
       take,
+      where: {
+        ...(search ? {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { content: { contains: search, mode: 'insensitive' } },
+            { excerpt: { contains: search, mode: 'insensitive' } },
+          ]
+        } : {})
+      },
       orderBy: { createdAt: "desc" },
       include: {
-        author: { select: { id: true, name: true, email: true, image: true } },
+        author: { select: { id: true, name: true, image: true } },
         categories: true,
         tags: true,
       },
@@ -47,6 +58,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { slug, categorySlug, skip, take } = body;
 
+    // ถ้าไม่มีสักอย่าง ให้ error
     if (!slug && !categorySlug) {
       return NextResponse.json(
         { success: false, message: "Slug or CategorySlug is required" },
@@ -54,22 +66,21 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    let whereCondition = {};
+    const whereCondition: any = {};
 
+    // ใช้ logic รวมกัน (AND)
     if (slug) {
-      whereCondition = {
-        tags: {
-          some: {
-            slug: slug,
-          },
+      whereCondition.tags = {
+        some: {
+          slug: slug,
         },
       };
-    } else if (categorySlug) {
-      whereCondition = {
-        categories: {
-          some: {
-            slug: categorySlug,
-          },
+    }
+
+    if (categorySlug) {
+      whereCondition.categories = {
+        some: {
+          slug: categorySlug,
         },
       };
     }

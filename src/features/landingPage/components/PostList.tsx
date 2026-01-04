@@ -5,11 +5,11 @@ import useStoreTag from "@/store/useStoreTag";
 
 const PostList = () => {
   const { postList, loading, loadMoreRef, hasMore } = usePostList();
-  const { tag } = useStoreTag();
+  const { selectTag } = useStoreTag();
 
   if (!loading && postList.length === 0) {
-    if (tag && tag.slug) {
-      return <h1>ไม่มีรายการโพสต์ สำหรับ {tag.name}</h1>;
+    if (selectTag && selectTag.slug) {
+      return <h1>ไม่มีรายการโพสต์ สำหรับ {selectTag.name}</h1>;
     }
     return <h1>ไม่มีรายการโพสต์</h1>;
   }

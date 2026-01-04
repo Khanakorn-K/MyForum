@@ -3,6 +3,7 @@ import { PostListentity } from "../entity/PostListentity";
 import { postListDataSource } from "../services/postListDataSource";
 import useStoreTag from "@/store/useStoreTag";
 import useStoreCategories from "@/store/useStoreCategories";
+import { useSearchParams } from "next/navigation";
 
 export const usePostList = () => {
   const [postList, setPostList] = useState<PostListentity[]>([]);
@@ -11,15 +12,16 @@ export const usePostList = () => {
   const [take] = useState<number>(10);
   const [hasMore, setHasMore] = useState(true);
   const loadMoreRef = useRef<HTMLDivElement | null>(null);
-
-  const { tag } = useStoreTag();
-  const { category } = useStoreCategories();
+  const searchParams = useSearchParams()
+  const queryParams = searchParams.get('search')
+  const { selectTag } = useStoreTag();
+  const { selectCategory } = useStoreCategories();
 
   useEffect(() => {
     setPostList([]);
     setSkip(0);
     setHasMore(true);
-  }, [tag, category]);
+  }, [selectTag, selectCategory]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -29,20 +31,27 @@ export const usePostList = () => {
       try {
         let response: PostListentity[] = [];
 
-        if (tag && tag.slug) {
-          response = await postListDataSource.fetchPostListByTag(
-            tag.slug,
+        if (selectTag?.slug && selectCategory?.slug) {
+          response = await postListDataSource.fetchPostListByTagAndCategory(
+            selectTag.slug,
+            selectCategory.slug,
             skip,
             take
           );
-        } else if (category && category.slug) {
+        } else if (selectTag?.slug) {
+          response = await postListDataSource.fetchPostListByTag(
+            selectTag.slug,
+            skip,
+            take
+          );
+        } else if (selectCategory?.slug) {
           response = await postListDataSource.fetchPostListByCategory(
-            category.slug,
+            selectCategory.slug,
             skip,
             take
           );
         } else {
-          response = await postListDataSource.fetchPostList(skip, take);
+          response = await postListDataSource.fetchPostList(skip, take, queryParams);
         }
 
         if (response.length < take) {
@@ -61,7 +70,7 @@ export const usePostList = () => {
     };
 
     fetchData();
-  }, [skip, tag, category, take]);
+  }, [selectTag, selectCategory, skip, take, queryParams]);
 
   const handleLoadMorePostLits = useCallback(() => {
     if (!loading && hasMore) {
@@ -87,5 +96,5 @@ export const usePostList = () => {
     return () => observer.disconnect();
   }, [handleLoadMorePostLits, loading, hasMore]);
 
-  return { postList, loading, loadMoreRef, hasMore, tag, category };
+  return { postList, loading, loadMoreRef, hasMore, selectTag, selectCategory };
 };

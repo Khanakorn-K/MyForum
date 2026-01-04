@@ -1,5 +1,5 @@
 "use client";
-import { Home, Tag, ChevronDown, CardSim, BrushCleaning } from "lucide-react";
+import { Home, Tag, CardSim, BrushCleaning } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -26,13 +26,14 @@ import useStoreCategories from "@/store/useStoreCategories";
 import { resetAllStores } from "@/store/restAllStore";
 
 export function AppSidebar() {
-  //เอาไว้แค่ดึงค่ามาแสดง
   const { tags, category } = useGlobal();
-  // จัดการ State filter
+
   const setTag = useStoreTag((state) => state.setTag);
-  const clearTag = useStoreTag((state) => state.clearTag);
+  const selectTag = useStoreTag((state) => state.selectTag);
+
   const setCategories = useStoreCategories((state) => state.setCategory);
-  const clearCategory = useStoreCategories((state) => state.clearCategory);
+  const selectCategory = useStoreCategories((state) => state.selectCategory);
+
   const items = [
     {
       title: "Home",
@@ -51,9 +52,9 @@ export function AppSidebar() {
       icon: Tag,
       items: tags.map((tag) => ({
         title: tag.name,
+        isActive: tag.name === selectTag.name,
         onClick: () => {
           setTag(tag);
-          clearCategory();
         },
       })),
     },
@@ -62,9 +63,9 @@ export function AppSidebar() {
       icon: CardSim,
       items: category.map((cat) => ({
         title: cat.name,
+        isActive: cat.name === selectCategory.name,
         onClick: () => {
           setCategories(cat);
-          clearTag();
         },
       })),
     },
@@ -83,25 +84,30 @@ export function AppSidebar() {
                     <Collapsible className="group/collapsible">
                       <CollapsibleTrigger asChild>
                         <SidebarMenuButton asChild>
-                          <Link href={item.url || "#"} onClick={item.onClick}>
+                          <div className="cursor-pointer">
                             <item.icon />
                             <span>{item.title}</span>
-                          </Link>
+                          </div>
                         </SidebarMenuButton>
                       </CollapsibleTrigger>
                       <CollapsibleContent>
                         <SidebarMenuSub>
                           {item.items.map((subItem, index) => (
-                            <SidebarMenuSubItem
-                              key={`${subItem.title}-${index}`}
-                            >
+                            <SidebarMenuSubItem key={`${subItem.title}-${index}`}>
                               <SidebarMenuSubButton asChild>
                                 <Button
                                   variant="ghost"
                                   onClick={subItem.onClick}
                                   className="w-full justify-start"
                                 >
-                                  <span>{subItem.title}</span>
+                                  <span
+                                    className={`${subItem.isActive
+                                      ? "text-green-500 font-bold"
+                                      : "text-foreground"
+                                      }`}
+                                  >
+                                    {subItem.title}
+                                  </span>
                                 </Button>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -111,10 +117,7 @@ export function AppSidebar() {
                     </Collapsible>
                   ) : (
                     <SidebarMenuButton asChild>
-                      <Link
-                        href={item.url || "#"}
-                        onClick={item.onClick}
-                      >
+                      <Link href={item.url || "#"} onClick={item.onClick}>
                         <item.icon />
                         <span>{item.title}</span>
                       </Link>

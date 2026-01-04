@@ -3,8 +3,8 @@
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useCreatePost } from "./hooks/useCreatePost";
-import { useState } from "react";
-import { Plus } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Plus, X } from "lucide-react";
 import { useGlobal } from "@/hooks/globalHook";
 import TiptapEditor from "@/components/ui/TiptapEditor";
 
@@ -16,7 +16,9 @@ export default function CreatePostIndex() {
     setFormData,
     handleSubmit,
     handleChange,
+    addTag,
     removeTag,
+    addCategory,
     removeCategory,
     router,
     postId,
@@ -27,42 +29,47 @@ export default function CreatePostIndex() {
   const [manualCategory, setManualCategory] = useState("");
   const [manualTag, setManualTag] = useState("");
 
-  const addCategory = (value: string) => {
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    if (!formData.categories?.includes(trimmed)) {
-      setFormData((prev) => ({
-        ...prev,
-        categories: [...(prev.categories || []), trimmed],
-      }));
+  // Logic สำหรับสร้าง URL Preview
+  const previewUrl = useMemo(() => {
+    if (!formData.coverImage) return null;
+
+    // กรณี 1: เป็น URL String (โหลดมาจาก DB)
+    if (typeof formData.coverImage === "string") {
+      return formData.coverImage;
     }
-    setManualCategory("");
-  };
+
+    // กรณี 2: เป็น File Object (เพิ่งเลือกไฟล์ใหม่)
+    if (formData.coverImage instanceof File) {
+      return URL.createObjectURL(formData.coverImage);
+    }
+
+    return null;
+  }, [formData.coverImage]);
 
   const handleManualCategoryKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
       addCategory(manualCategory);
+      setManualCategory("");
     }
-  };
-
-  const addTag = (value: string) => {
-    const trimmed = value.trim();
-    if (!trimmed) return;
-    if (!formData.tags?.includes(trimmed)) {
-      setFormData((prev) => ({
-        ...prev,
-        tags: [...(prev.tags || []), trimmed],
-      }));
-    }
-    setManualTag("");
   };
 
   const handleManualTagKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === "Enter") {
       e.preventDefault();
       addTag(manualTag);
+      setManualTag("");
     }
+  };
+
+  const handleAddCategoryClick = () => {
+    addCategory(manualCategory);
+    setManualCategory("");
+  };
+
+  const handleAddTagClick = () => {
+    addTag(manualTag);
+    setManualTag("");
   };
 
   return (
@@ -112,7 +119,6 @@ export default function CreatePostIndex() {
               />
             </div>
 
-            {/* Content */}
             <div className="space-y-2">
               <label
                 htmlFor="content"
@@ -135,6 +141,30 @@ export default function CreatePostIndex() {
               >
                 Cover Image URL
               </label>
+
+              {/* ส่วนแสดง Preview Image */}
+              {previewUrl && (
+                <div className="relative w-full h-64 mb-4 rounded-md overflow-hidden border border-border bg-muted/30 group">
+                  <img
+                    src={previewUrl}
+                    alt="Cover Preview"
+                    className="w-full h-full object-contain"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setFormData((prev) => ({
+                        ...prev,
+                        coverImage: "",
+                      }));
+                    }}
+                    className="absolute top-2 right-2 bg-destructive/80 text-white p-1 rounded-full shadow-md hover:bg-destructive transition-all"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
               <input
                 type="file"
                 id="coverImage"
@@ -145,7 +175,8 @@ export default function CreatePostIndex() {
                     coverImage: e.target.files?.[0],
                   })
                 }
-                className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground"
+                accept="image/*"
+                className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
               />
             </div>
 
@@ -184,7 +215,7 @@ export default function CreatePostIndex() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => addCategory(manualCategory)}
+                    onClick={handleAddCategoryClick}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>
@@ -247,7 +278,7 @@ export default function CreatePostIndex() {
                   <Button
                     type="button"
                     variant="outline"
-                    onClick={() => addTag(manualTag)}
+                    onClick={handleAddTagClick}
                   >
                     <Plus className="h-4 w-4" />
                   </Button>

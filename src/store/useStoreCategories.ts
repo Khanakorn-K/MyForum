@@ -1,17 +1,17 @@
 import { CategoriesEntity } from "@/entity/CategoriesEntity";
 import { create } from '@/store/restAllStore';
 type State = {
-  category: CategoriesEntity;
+  selectCategory: CategoriesEntity;
 };
 type Action = {
   clearCategory: () => void;
   setCategory: (value: CategoriesEntity) => void;
 };
 const useStoreCategories = create<State & Action>((set) => ({
-  category: { id: "", name: "", slug: "" },
+  selectCategory: { id: "", name: "", slug: "" },
   clearCategory: () =>
-    set({ category: { id: "", name: "", slug: "" } as CategoriesEntity }),
-  setCategory: (value) => set({ category: value }),
+    set({ selectCategory: { id: "", name: "", slug: "" } as CategoriesEntity }),
+  setCategory: (value) => set({ selectCategory: value }),
 }));
 
 export default useStoreCategories;

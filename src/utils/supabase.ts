@@ -18,11 +18,9 @@ export async function uploadFile(image: File) {
     .from(bucketName)
     .upload(pathName, image);
   if (error) {
-    console.log("supabase client error >>>", error);
   } else {
     const { data } = supabase.storage.from(bucketName).getPublicUrl(pathName);
 
-    console.log("data.publicUrl", data.publicUrl);
     return data.publicUrl;
   }
 }

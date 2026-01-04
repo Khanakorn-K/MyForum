@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
       counter++;
     }
 
-    const author = session?.user ?? (await prisma.user.findFirst());
+    const author = session?.user
 
     if (!author) {
       return NextResponse.json(

@@ -6,7 +6,8 @@ import { PostListResponseModel } from "../models/PostListResponseModel";
 export const postListDataSource = {
   fetchPostList: async (
     skip: number,
-    take: number
+    take: number,
+    search?: string | null
   ): Promise<PostListentity[]> => {
     const response = await apiClient.get<PostListResponseModel>(
       "/post",
@@ -14,6 +15,7 @@ export const postListDataSource = {
         params: {
           skip: skip.toString(),
           take: take.toString(),
+          search: search || "",
         },
       }
     );
@@ -26,7 +28,6 @@ export const postListDataSource = {
     skip: number,
     take: number
   ): Promise<PostListentity[]> => {
-    // ส่ง slug พร้อม pagination ไปที่ API
     const response = await apiClient.post<PostListResponseModel>(
       "/post",
       {
@@ -38,6 +39,7 @@ export const postListDataSource = {
     const result = response.data;
     return result.map((item) => new PostListentity(item));
   },
+
   fetchPostListByCategory: async (
     slug: string,
     skip: number,
@@ -54,6 +56,26 @@ export const postListDataSource = {
     const result = response.data;
     return result.map((item) => new PostListentity(item));
   },
+
+  fetchPostListByTagAndCategory: async (
+    tagSlug: string,
+    categorySlug: string,
+    skip: number,
+    take: number
+  ): Promise<PostListentity[]> => {
+    const response = await apiClient.post<PostListResponseModel>(
+      "/post",
+      {
+        slug: tagSlug,
+        categorySlug: categorySlug,
+        skip,
+        take,
+      }
+    );
+    const result = response.data;
+    return result.map((item) => new PostListentity(item));
+  },
+
   detchDelete: (id: string) => {
     return apiClient.delete<ApiResponse<void>>(`/demo/${id}`);
   },

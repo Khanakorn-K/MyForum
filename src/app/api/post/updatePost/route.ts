@@ -54,7 +54,17 @@ export async function PUT(request: NextRequest) {
       );
       results.forEach((t) => tagIds.push({ id: t.id }));
     }
+    // เพิ่มก่อนทำการ update
+    const existingPost = await prisma.post.findUnique({ where: { id } });
 
+    if (!existingPost) {
+      return NextResponse.json({ success: false, message: "Post not found" }, { status: 404 });
+    }
+
+    // เช็คสิทธิ์: ต้องเป็นเจ้าของ หรือ เป็น Admin
+    if (existingPost.authorId !== session.user.id && session.user.role !== 'ADMIN') {
+      return NextResponse.json({ success: false, message: "Forbidden" }, { status: 403 });
+    }
     const updatedPost = await prisma.post.update({
       where: { id },
       data: {
