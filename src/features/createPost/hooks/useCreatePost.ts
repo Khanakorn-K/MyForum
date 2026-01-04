@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { createPostDataSource } from "../services/createPostDataSource";
 import { CreatePostRequestModel } from "../models/CreatePostRequestModel";
 import { PostEntity } from "../entity/PostEntity";
@@ -27,6 +27,10 @@ export const useCreatePost = () => {
     categories: [],
     tags: [],
   });
+
+  // Local UI state
+  const [manualCategory, setManualCategory] = useState("");
+  const [manualTag, setManualTag] = useState("");
 
   useEffect(() => {
     if (!postId && session.data?.user?.id) {
@@ -77,6 +81,23 @@ export const useCreatePost = () => {
       fetchPostData();
     }
   }, [postId, session.status, session.data, router]);
+
+  // Logic สำหรับสร้าง URL Preview
+  const previewUrl = useMemo(() => {
+    if (!formData.coverImage) return null;
+
+    // กรณี 1: เป็น URL String (โหลดมาจาก DB)
+    if (typeof formData.coverImage === "string") {
+      return formData.coverImage;
+    }
+
+    // กรณี 2: เป็น File Object (เพิ่งเลือกไฟล์ใหม่)
+    if (formData.coverImage instanceof File) {
+      return URL.createObjectURL(formData.coverImage);
+    }
+
+    return null;
+  }, [formData.coverImage]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,6 +186,61 @@ export const useCreatePost = () => {
     }
   };
 
+  const handleManualCategoryKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addCategory(manualCategory);
+      setManualCategory("");
+    }
+  };
+
+  const handleManualTagKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addTag(manualTag);
+      setManualTag("");
+    }
+  };
+
+  const handleAddCategoryClick = () => {
+    addCategory(manualCategory);
+    setManualCategory("");
+  };
+
+  const handleAddTagClick = () => {
+    addTag(manualTag);
+    setManualTag("");
+  };
+
+  const handleRemovePreviewImage = () => {
+    setFormData((prev) => ({
+      ...prev,
+      coverImage: "",
+    }));
+  };
+
+  const handleSelectCategory = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    addCategory(e.target.value);
+    e.target.value = "";
+  };
+
+  const handleSelectTag = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    addTag(e.target.value);
+    e.target.value = "";
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({
+      ...formData,
+      coverImage: e.target.files?.[0],
+    });
+  }
+
+  const handleContentChange = (html: string) => {
+    setFormData((prev) => ({ ...prev, content: html }));
+  }
+
+
   return {
     isLoading,
     error,
@@ -179,5 +255,20 @@ export const useCreatePost = () => {
     removeCategory,
     router,
     postId,
+    // New exports
+    manualCategory,
+    setManualCategory,
+    manualTag,
+    setManualTag,
+    previewUrl,
+    handleManualCategoryKeyDown,
+    handleManualTagKeyDown,
+    handleAddCategoryClick,
+    handleAddTagClick,
+    handleRemovePreviewImage,
+    handleSelectCategory,
+    handleSelectTag,
+    handleFileChange,
+    handleContentChange,
   };
 };

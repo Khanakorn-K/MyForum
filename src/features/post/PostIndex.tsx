@@ -1,38 +1,12 @@
 "use client";
-import { useSearchParams } from "next/navigation";
-import React, { useEffect, useState } from "react";
-import { PostEntity } from "./entity/PostEntity";
-import { PostDataSource } from "./services/PostDataSource";
+import React from "react";
+import { usePostDetail } from "./hooks/usePostDetail";
 import Image from "next/image";
 import { formatDate } from "@/utils/date";
 import Comment from "./components/Comment";
 
 const PostIndex = () => {
-  const searchParams = useSearchParams();
-  const id = searchParams.get("id");
-  const [post, setPost] = useState<PostEntity | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (!id) {
-      setLoading(false);
-      return;
-    }
-
-    const fetchPost = async () => {
-      try {
-        setLoading(true);
-        const result = await PostDataSource.fetchPostOneById(id);
-        setPost(result);
-      } catch (e) {
-        console.error(e);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchPost();
-  }, [id]);
+  const { post, loading } = usePostDetail();
 
   return (
     <main className="min-h-screen bg-slate-950 px-4 py-8 text-slate-100">
@@ -63,9 +37,8 @@ const PostIndex = () => {
                 <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
                   <span>{formatDate(post.createdAt)}</span>
                   <span
-                    className={`h-1 w-1 rounded-full ${
-                      post.published ? "bg-green-600" : "bg-slate-600"
-                    }`}
+                    className={`h-1 w-1 rounded-full ${post.published ? "bg-green-600" : "bg-slate-600"
+                      }`}
                   />
                   <span>
                     เผยแพร่แล้ว: {post.published ? "ใช่" : "ยังไม่เผยแพร่"}

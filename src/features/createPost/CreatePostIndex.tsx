@@ -3,7 +3,6 @@
 import { Button } from "@/components/ui/Button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/Card";
 import { useCreatePost } from "./hooks/useCreatePost";
-import { useState, useMemo } from "react";
 import { Plus, X } from "lucide-react";
 import { useGlobal } from "@/hooks/globalHook";
 import TiptapEditor from "@/components/ui/TiptapEditor";
@@ -13,64 +12,30 @@ export default function CreatePostIndex() {
     isLoading,
     error,
     formData,
-    setFormData,
     handleSubmit,
     handleChange,
-    addTag,
     removeTag,
-    addCategory,
     removeCategory,
     router,
     postId,
+    // New exports
+    manualCategory,
+    setManualCategory,
+    manualTag,
+    setManualTag,
+    previewUrl,
+    handleManualCategoryKeyDown,
+    handleManualTagKeyDown,
+    handleAddCategoryClick,
+    handleAddTagClick,
+    handleRemovePreviewImage,
+    handleSelectCategory,
+    handleSelectTag,
+    handleFileChange,
+    handleContentChange,
   } = useCreatePost();
 
   const { tags: availableTags, category: availableCategories } = useGlobal();
-
-  const [manualCategory, setManualCategory] = useState("");
-  const [manualTag, setManualTag] = useState("");
-
-  // Logic สำหรับสร้าง URL Preview
-  const previewUrl = useMemo(() => {
-    if (!formData.coverImage) return null;
-
-    // กรณี 1: เป็น URL String (โหลดมาจาก DB)
-    if (typeof formData.coverImage === "string") {
-      return formData.coverImage;
-    }
-
-    // กรณี 2: เป็น File Object (เพิ่งเลือกไฟล์ใหม่)
-    if (formData.coverImage instanceof File) {
-      return URL.createObjectURL(formData.coverImage);
-    }
-
-    return null;
-  }, [formData.coverImage]);
-
-  const handleManualCategoryKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addCategory(manualCategory);
-      setManualCategory("");
-    }
-  };
-
-  const handleManualTagKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      addTag(manualTag);
-      setManualTag("");
-    }
-  };
-
-  const handleAddCategoryClick = () => {
-    addCategory(manualCategory);
-    setManualCategory("");
-  };
-
-  const handleAddTagClick = () => {
-    addTag(manualTag);
-    setManualTag("");
-  };
 
   return (
     <div className="container mx-auto max-w-4xl py-8 px-4">
@@ -128,9 +93,7 @@ export default function CreatePostIndex() {
               </label>
               <TiptapEditor
                 content={formData.content}
-                onChange={(html) =>
-                  setFormData((prev) => ({ ...prev, content: html }))
-                }
+                onChange={handleContentChange}
               />
             </div>
 
@@ -152,12 +115,7 @@ export default function CreatePostIndex() {
                   />
                   <button
                     type="button"
-                    onClick={() => {
-                      setFormData((prev) => ({
-                        ...prev,
-                        coverImage: "",
-                      }));
-                    }}
+                    onClick={handleRemovePreviewImage}
                     className="absolute top-2 right-2 bg-destructive/80 text-white p-1 rounded-full shadow-md hover:bg-destructive transition-all"
                   >
                     <X className="w-4 h-4" />
@@ -169,12 +127,7 @@ export default function CreatePostIndex() {
                 type="file"
                 id="coverImage"
                 name="coverImage"
-                onChange={(e) =>
-                  setFormData({
-                    ...formData,
-                    coverImage: e.target.files?.[0],
-                  })
-                }
+                onChange={handleFileChange}
                 accept="image/*"
                 className="w-full px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground file:mr-4 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-semibold file:bg-primary/10 file:text-primary hover:file:bg-primary/20"
               />
@@ -186,10 +139,7 @@ export default function CreatePostIndex() {
               </label>
               <div className="flex gap-2">
                 <select
-                  onChange={(e) => {
-                    addCategory(e.target.value);
-                    e.target.value = "";
-                  }}
+                  onChange={handleSelectCategory}
                   className="w-1/3 px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground cursor-pointer"
                   defaultValue=""
                 >
@@ -249,10 +199,7 @@ export default function CreatePostIndex() {
               </label>
               <div className="flex gap-2">
                 <select
-                  onChange={(e) => {
-                    addTag(e.target.value);
-                    e.target.value = "";
-                  }}
+                  onChange={handleSelectTag}
                   className="w-1/3 px-4 py-2 border border-border rounded-md focus:outline-none focus:ring-2 focus:ring-primary bg-background text-foreground cursor-pointer"
                   defaultValue=""
                 >

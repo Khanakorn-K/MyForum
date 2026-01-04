@@ -1,6 +1,5 @@
 "use client";
 
-import { signIn } from "next-auth/react";
 import { Button } from "@/components/ui/Button";
 import {
     Card,
@@ -8,8 +7,11 @@ import {
     CardHeader,
     CardTitle,
 } from "@/components/ui/Card";
+import { useLogin } from "./hooks/useLogin";
 
 export default function LoginIndex() {
+    const { handleGoogleLogin } = useLogin();
+
     return (
         <div className="flex min-h-[calc(100vh-4rem)] items-center justify-center bg-muted/40 p-4">
             <Card className="w-full max-w-md shadow-lg">
@@ -25,7 +27,7 @@ export default function LoginIndex() {
                     <Button
                         variant="outline"
                         className="w-full py-6 text-base"
-                        onClick={() => signIn("google", { callbackUrl: "/" })}
+                        onClick={handleGoogleLogin}
                     >
                         <svg
                             className="mr-2 h-5 w-5"
